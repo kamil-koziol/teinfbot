@@ -14,5 +14,7 @@ COPY migrations/ ./migrations
 # Now install your package
 RUN pip install .
 
-# Set the command to run your script
-CMD ["python", "src/main.py"]
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
