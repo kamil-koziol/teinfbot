@@ -8,6 +8,8 @@ RUN pip install --upgrade pip setuptools wheel
 # Copy source and config first — they’re both needed for pip install .
 COPY pyproject.toml ./
 COPY src/ ./src
+COPY migrate.py ./
+COPY migrations/ ./migrations
 
 # Now install your package
 RUN pip install .
