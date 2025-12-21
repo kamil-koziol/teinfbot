@@ -4,12 +4,13 @@ from discord import app_commands
 from bot.utils.time_parser import TimeParser
 
 from bot import Bot
-from db.models import User
+from db import TimeEntryRepository
 import bot.utils.discord as dc
 
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class Czas(commands.Cog):
@@ -24,11 +25,11 @@ class Czas(commands.Cog):
         try:
             user = user or interaction.user
 
-            db_user = await User.find(user.id)
+            time_spent = TimeEntryRepository().get_user_time_entry_count(user.id)
 
             em = discord.Embed(
                 title="Czas spędzony na serwerze",
-                description=f"{user.name} spędził {str(TimeParser(db_user.time_spent * 60))} na serwerze",
+                description=f"{user.name} spędził {str(TimeParser(time_spent * 60))} na serwerze",
                 color=discord.Colour.green(),
             )
             await interaction.response.send_message(embed=em)
@@ -41,27 +42,24 @@ class Czas(commands.Cog):
     )
     @app_commands.describe(number="Liczba użytkowników do wyświetlenia (1-20)")
     async def czas_top(self, interaction: discord.Interaction, number: int):
-        try:
-            if number < 1 or number > 20:
-                await interaction.response.send_message(
-                    "Liczba musi być między 1 a 20!", ephemeral=True
-                )
-                return
-
-            top_users = await User.get_top_time_spent(limit=number)
-
-            description = ""
-            for i, user in enumerate(top_users, 1):
-                description += f"{i}. {dc.mention_user(user.discord_id)} - {TimeParser(user.time_spent * 60)}\n"
-
-            em = discord.Embed(
-                title=f"Top {number} użytkowników pod względem spędzonego czasu",
-                description=description or "Brak danych.",
-                color=discord.Colour.green(),
+        if number < 1 or number > 20:
+            await interaction.response.send_message(
+                "Liczba musi być między 1 a 20!", ephemeral=True
             )
-            await interaction.response.send_message(embed=em)
-        except Exception as e:
-            logger.error(f"{self.czas_top.__name__} failed with {e}")
+            return
+
+        top_user_ids = TimeEntryRepository().get_top_users_by_time_entry_count(number)
+
+        description = ""
+        for i, top_user in enumerate(top_user_ids, 1):
+            description += f"{i}. {dc.mention_user(top_user['user_id'])} - {TimeParser(top_user['total'] * 60)}\n"
+
+        em = discord.Embed(
+            title=f"Top {number} użytkowników pod względem spędzonego czasu",
+            description=description or "Brak danych.",
+            color=discord.Colour.green(),
+        )
+        await interaction.response.send_message(embed=em)
 
     async def cog_load(self):
         # Register both commands with a specific guild

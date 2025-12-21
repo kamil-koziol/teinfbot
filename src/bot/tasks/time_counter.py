@@ -1,7 +1,8 @@
 from discord.ext import tasks, commands
 
 from bot import Bot
-from db.models import User
+from db import TimeEntryRepository, TimeEntry
+import datetime
 
 
 class TimeCounter(commands.Cog):
@@ -18,7 +19,12 @@ class TimeCounter(commands.Cog):
         online_members = await self.bot.get_members_in_voice_channels()
         ids = [m.id for m in online_members]
         print(f"Time update for {ids}")
-        await User.increment_time(ids, 1)
+
+        time_entry_repo = TimeEntryRepository()
+        for _id in ids:
+            time_entry_repo.create(
+                TimeEntry(id=0, user_id=_id, created_at=datetime.datetime.now())
+            )
 
     @time_counter.before_loop
     async def before_time_counter(self):

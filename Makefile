@@ -13,3 +13,5 @@ format:
 format-check:
 	ruff check .
 
+migrate:
+	./migrate.py --db database.db --migrations migrations

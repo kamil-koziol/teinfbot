@@ -3,11 +3,9 @@ name = "teinfbot"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = "==3.10.19"
 dependencies = [
     "discord-py>=2.5.2",
-    "motor>=3.7.1",
-    "pymongo>=4.12.1",
     "requests-futures>=1.0.2",
 ]
 

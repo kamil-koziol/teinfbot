@@ -1,8 +1,8 @@
 from discord.ext import commands
 from discord import app_commands
 from bot import Bot
-from db.models import User
 import discord
+from db import User, UserRepository
 
 
 class Sync(commands.Cog):
@@ -26,6 +26,7 @@ class Sync(commands.Cog):
         try:
             guild = interaction.guild
             members = [member async for member in guild.fetch_members(limit=None)]
+            users_by_id = {user.id: user for user in UserRepository().list_users()}
 
             created_count = 0
             for member in members:
@@ -33,7 +34,10 @@ class Sync(commands.Cog):
                 if member.bot:
                     continue
 
-                await User._find_or_create(member.id)
+                if member.id in users_by_id:
+                    continue
+
+                UserRepository().create(User(id=member.id))
                 created_count += 1
 
             await interaction.followup.send(

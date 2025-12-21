@@ -3,9 +3,9 @@ from discord.ext import commands
 from discord import app_commands
 
 from bot import Bot
-from db.models import User
 from bot.utils.discord import mention_user
 from bot.utils.time_parser import TimeParser
+from db import TimeEntryRepository
 
 import logging
 
@@ -21,12 +21,12 @@ class Info(commands.Cog):
     async def info(self, interaction: discord.Interaction, user: discord.Member = None):
         try:
             member = user or interaction.user
-            db_user = await User.find(member.id)
+            time_spent = TimeEntryRepository().get_user_time_entry_count(member.id)
 
             informacje = {
                 "#": mention_user(member.id),
                 "Nick": member.name,
-                "Spędzony czas": str(TimeParser(db_user.time_spent*60)),
+                "Spędzony czas": str(TimeParser(time_spent * 60)),
                 "ID": member.id,
                 "Status": member.status,
                 "Najwyższa rola": member.top_role.name,
