@@ -7,10 +7,10 @@ class TimeEntryRepository:
         with get_connection() as conn:
             cursor = conn.execute(
                 """
-                INSERT INTO time_entries (user_id, created_at)
-                VALUES (?, ?)
+                INSERT INTO time_entries (user_id, created_at, type)
+                VALUES (?, ?, ?)
                 """,
-                (time_entry.user_id, time_entry.created_at),
+                (time_entry.user_id, time_entry.created_at, time_entry.type.value),
             )
             time_entry.id = cursor.lastrowid
         return time_entry
@@ -21,6 +21,7 @@ class TimeEntryRepository:
                 """
                 SELECT user_id, COUNT(*) as total
                 FROM time_entries
+                WHERE type='online'
                 GROUP BY user_id
                 ORDER BY total DESC
                 LIMIT ?
@@ -36,7 +37,7 @@ class TimeEntryRepository:
                 """
                 SELECT user_id, COUNT(*) as total
                 FROM time_entries
-                WHERE user_id=?
+                WHERE user_id=? AND type='online'
                 LIMIT 1
                 """,
                 (user_id,),
