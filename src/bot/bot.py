@@ -10,6 +10,9 @@ COMMANDS_PATH = os.path.join(BOT_SRC, "commands")
 TASKS_PATH = os.path.join(BOT_SRC, "tasks")
 EVENTS_PATH = os.path.join(BOT_SRC, "events")
 
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+
 
 class Bot(commands.Bot):
     def __init__(self, guild_id: int):

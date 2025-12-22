@@ -21,7 +21,6 @@ class TimeCounter(commands.Cog):
         await self.bot.wait_until_ready()
         online_members = await self.bot.get_members_in_voice_channels()
         ids = [m.id for m in online_members]
-        print(f"Time update for {ids}")
         logger.info(f"time update for {ids}")
 
         time_entry_repo = TimeEntryRepository()
@@ -30,7 +29,7 @@ class TimeCounter(commands.Cog):
 
         afk_members = await self.bot.get_members_in_afk_channel()
         ids = [m.id for m in afk_members]
-        print(f"AFK time update for {ids}")
+        logger.info(f"AFK time update for {ids}")
 
         time_entry_repo = TimeEntryRepository()
         for _id in ids:
