@@ -72,9 +72,8 @@ class Bot(commands.Bot):
             )
 
     async def get_members_in_voice_channels(self) -> list[discord.Member]:
-        AFK_CHANNEL_ID = 423934688244006913
         members = []
         for channel in self.get_all_channels():
-            if str(channel.type) == "voice" and channel.id != AFK_CHANNEL_ID:
+            if str(channel.type) == "voice" and channel.id != config.dc.afk_channel_id:
                 members.extend(channel.members)
         return members
