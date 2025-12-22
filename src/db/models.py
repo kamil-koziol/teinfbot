@@ -11,6 +11,7 @@ class User:
 
 class TimeEntryType(str, Enum):
     ONLINE = 'online'
+    AFK = 'afk'
 
 @dataclass
 class TimeEntry:

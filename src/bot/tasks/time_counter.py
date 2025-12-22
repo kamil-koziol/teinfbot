@@ -1,9 +1,12 @@
 from discord.ext import tasks, commands
 
 from bot import Bot
-from db import TimeEntryRepository, TimeEntry
+from db import TimeEntryRepository, TimeEntry, TimeEntryType
 import datetime
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TimeCounter(commands.Cog):
     def __init__(self, bot: Bot):
@@ -19,10 +22,19 @@ class TimeCounter(commands.Cog):
         online_members = await self.bot.get_members_in_voice_channels()
         ids = [m.id for m in online_members]
         print(f"Time update for {ids}")
+        logger.info(f"time update for {ids}")
 
         time_entry_repo = TimeEntryRepository()
         for _id in ids:
             time_entry_repo.create(TimeEntry(user_id=_id))
+
+        afk_members = await self.bot.get_members_in_afk_channel()
+        ids = [m.id for m in afk_members]
+        print(f"AFK time update for {ids}")
+
+        time_entry_repo = TimeEntryRepository()
+        for _id in ids:
+            time_entry_repo.create(TimeEntry(user_id=_id, type=TimeEntryType.AFK))
 
     @time_counter.before_loop
     async def before_time_counter(self):
