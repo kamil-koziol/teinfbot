@@ -22,9 +22,7 @@ class TimeCounter(commands.Cog):
 
         time_entry_repo = TimeEntryRepository()
         for _id in ids:
-            time_entry_repo.create(
-                TimeEntry(id=0, user_id=_id, created_at=datetime.datetime.now())
-            )
+            time_entry_repo.create(TimeEntry(user_id=_id))
 
     @time_counter.before_loop
     async def before_time_counter(self):

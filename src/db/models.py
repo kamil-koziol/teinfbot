@@ -1,14 +1,16 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Optional
 
 
 @dataclass
 class User:
-    id: int
+    id: Optional[int] = None
 
 
 @dataclass
 class TimeEntry:
-    id: int
     user_id: int
-    created_at: datetime
+
+    id: Optional[int] = None
+    created_at: datetime = field(default_factory=datetime.now)
